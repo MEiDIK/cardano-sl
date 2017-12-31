@@ -73,6 +73,8 @@ servantHandlers sendActions =
     :<|>
      M.cancelAllApplyingPtxs
     :<|>
+     M.cancelOneApplyingPtx
+    :<|>
      M.updateTransaction
     :<|>
      M.getHistoryLimited

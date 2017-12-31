@@ -19,6 +19,7 @@ module Pos.Wallet.Web.Methods.Misc
        , WalletStateSnapshot (..)
 
        , cancelAllApplyingPtxs
+       , cancelOneApplyingPtx
        ) where
 
 import           Universum
@@ -37,16 +38,17 @@ import           Pos.Wallet.KeyStorage        (deleteSecretKey, getSecretKeys)
 import           Pos.Wallet.WalletMode        (applyLastUpdate, connectedPeers,
                                                localChainDifficulty,
                                                networkChainDifficulty)
-import           Pos.Wallet.Web.ClientTypes   (Addr, CId, CProfile (..), CUpdateInfo (..),
+import           Pos.Wallet.Web.ClientTypes   (Addr, CId, CProfile (..), CTxId (..), CUpdateInfo (..),
                                                SyncProgress (..), cIdToAddress)
 import           Pos.Wallet.Web.Error         (WalletError (..))
 import           Pos.Wallet.Web.Mode          (MonadWalletWebMode)
-import           Pos.Wallet.Web.State         (cancelApplyingPtxs, getNextUpdate,
+import           Pos.Wallet.Web.State         (cancelApplyingPtxs,
+                                               cancelSpecificApplyingPtx, getNextUpdate,
                                                getProfile,
                                                getWalletStorage, removeNextUpdate,
                                                setProfile, testReset)
 import           Pos.Wallet.Web.State.Storage (WalletStorage)
-import           Pos.Wallet.Web.Util          (testOnlyEndpoint)
+import           Pos.Wallet.Web.Util          (decodeCTypeOrFail, testOnlyEndpoint)
 
 
 ----------------------------------------------------------------------------
@@ -135,3 +137,8 @@ dumpState = WalletStateSnapshot <$> getWalletStorage
 
 cancelAllApplyingPtxs :: MonadWalletWebMode m => m ()
 cancelAllApplyingPtxs = testOnlyEndpoint cancelApplyingPtxs
+
+cancelOneApplyingPtx :: MonadWalletWebMode m => CTxId -> m ()
+cancelOneApplyingPtx cTxId = do
+    txId <- decodeCTypeOrFail cTxId
+    testOnlyEndpoint (cancelSpecificApplyingPtx txId)

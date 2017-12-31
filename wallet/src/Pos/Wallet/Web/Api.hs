@@ -42,6 +42,7 @@ module Pos.Wallet.Web.Api
        , NewPayment
        , TxFee
        , CancelApplyingPtxs
+       , CancelSpecificApplyingPtx
        , UpdateTx
        , GetHistory
 
@@ -305,6 +306,13 @@ type CancelApplyingPtxs =
     :> "cancel"
     :> WRes Get ()
 
+type CancelSpecificApplyingPtx =
+       "txs"
+    :> "resubmission"
+    :> "cancelsingle"
+    :> Capture "transaction" CTxId
+    :> WRes Get ()
+
 type GetHistory =
        "txs"
     :> "histories"
@@ -477,6 +485,8 @@ type WalletApi = ApiPrefix :> (
      TxFee
     :<|>
      CancelApplyingPtxs
+    :<|>
+     CancelSpecificApplyingPtx
     :<|>
       -- FIXME: Should capture the URL parameters in the payload.
      UpdateTx
